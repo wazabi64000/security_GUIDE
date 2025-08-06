@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>mysql2 - Sécuriser MySQL avec requêtes préparées</title>
-<link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <nav style="background:#007acc; padding:10px;">
@@ -23,19 +23,29 @@
     <a href="winston.html" style="color:#fff; text-decoration:none;">Winston</a>
   </nav>
 
-  <main style="padding:20px; max-width:900px;">
-    <h1>mysql2 - Sécuriser MySQL avec requêtes préparées</h1>
+  <main >
+    <h1>mysql2 - Sécuriser MySQL avec des requêtes préparées</h1>
 
-    <p><strong>Description :</strong> mysql2 est un client MySQL pour Node.js qui supporte les requêtes préparées, permettant d'éviter les injections SQL.</p>
+    <h2>1. Description</h2>
+    <p>
+      <code>mysql2</code> est un client MySQL pour Node.js qui prend en charge les <strong>promesses</strong> et les <strong>requêtes préparées</strong>.
+      Cela le rend adapté à des applications modernes utilisant async/await et offre une bonne sécurité par défaut.
+    </p>
 
-    <p><strong>Cas d'utilisation :</strong> Accès sécurisé à une base MySQL, applications web avec formulaires ou APIs.</p>
+    <h2>2. Pourquoi utiliser les requêtes préparées ?</h2>
+    <p>
+      Les requêtes préparées permettent d'éviter les <strong>injections SQL</strong>. Elles séparent les données utilisateur de la commande SQL.
+      Exemple d'injection classique à éviter :
+    </p>
+    <pre><code>SELECT * FROM users WHERE username = 'admin' OR '1'='1';</code></pre>
+    <p>
+      En utilisant les requêtes préparées, la donnée est "échappée" automatiquement. Cela empêche un utilisateur malveillant de modifier la structure de la requête.
+    </p>
 
-    <p><strong>Pourquoi :</strong> Les requêtes préparées séparent les données des commandes SQL, évitant ainsi les injections malveillantes.</p>
-
-    <p><strong>Installation :</strong></p>
+    <h2>3. Installation du module</h2>
     <pre><code>npm install mysql2</code></pre>
 
-    <p><strong>Exemple :</strong></p>
+    <h2>4. Exemple complet avec explication</h2>
     <pre><code>import mysql from 'mysql2/promise';
 
 async function main() {
@@ -46,22 +56,56 @@ async function main() {
     password: 'votre_mot_de_passe'
   });
 
-  const userId = 1; // Exemple d'entrée utilisateur sécurisée
+  const userId = 1;
 
-  // Requête préparée sécurisée
-  const [rows] = await connection.execute('SELECT * FROM users WHERE id = ?', [userId]);
+  const [rows] = await connection.execute(
+    'SELECT * FROM users WHERE id = ?',
+    [userId]
+  );
 
   console.log(rows);
+
   await connection.end();
 }
 
 main().catch(console.error);
 </code></pre>
 
-    <p><strong>Explication :</strong> La requête utilise un placeholder <code>?</code> pour intégrer la variable <code>userId</code>. mysql2 s'assure que cette valeur est sécurisée et échappée, empêchant toute injection SQL.</p>
+    <h2>5. Explication étape par étape</h2>
+    <ul>
+      <li><strong>import mysql</strong> : on importe le module <code>mysql2</code> en mode promesse.</li>
+      <li><strong>mysql.createConnection({...})</strong> : on établit une connexion à la base MySQL avec les bons identifiants.</li>
+      <li><strong>userId = 1</strong> : c'est la donnée qui aurait pu être injectée. Elle est ici simulée proprement.</li>
+      <li><strong>connection.execute(...)</strong> : c'est la requête préparée. Le point d'interrogation <code>?</code> est remplacé par <code>userId</code>, de manière sécurisée.</li>
+      <li><strong>console.log(rows)</strong> : on affiche les résultats récupérés depuis la base.</li>
+      <li><strong>connection.end()</strong> : on ferme la connexion proprement.</li>
+    </ul>
+
+    <h2>6. Avantages des requêtes préparées</h2>
+    <ul>
+      <li>Protègent contre les injections SQL automatiquement</li>
+      <li>Plus lisibles et maintenables dans le code</li>
+      <li>Pas besoin de nettoyer manuellement les entrées utilisateur</li>
+      <li>Recommandées dans tous les cas où des données utilisateur sont intégrées à une requête</li>
+    </ul>
+
+    <h2>7. Aller plus loin</h2>
+    <p>
+      Pour insérer des données, c’est le même principe :
+    </p>
+    <pre><code>
+const [result] = await connection.execute(
+  'INSERT INTO users (name, email) VALUES (?, ?)',
+  ['Moi', 'moi@example.com']
+);
+</code></pre>
+    <p>
+      Cela garantit que ni <code>name</code> ni <code>email</code> ne peuvent contenir du SQL malveillant.
+    </p>
   </main>
+
   <footer style="margin-top:40px; padding:10px; border-top:1px solid #ccc; text-align:center; font-size:0.9em; color:#555;">
-  <p>Guide réalisé pour d'amuser</p>
-</footer>
+    <p>Guide de sécurité MySQL réalisé pour un apprentissage clair et pratique</p>
+  </footer>
 </body>
 </html>
