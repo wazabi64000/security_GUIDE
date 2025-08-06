@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>cors - Sécurité Express</title>
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+  <nav style="background:#007acc; padding:10px;">
+    <a href="index.html" style="color:#fff; text-decoration:none; margin-right:15px;">Accueil</a>
+    <a href="helmet.html" style="color:#fff; text-decoration:none; margin-right:15px;">Helmet</a>
+    <a href="rate-limit.html" style="color:#fff; text-decoration:none; margin-right:15px;">Rate Limit</a>
+    <a href="cors.html" style="color:#fff; text-decoration:none; margin-right:15px;">CORS</a>
+    <a href="joi.html" style="color:#fff; text-decoration:none; margin-right:15px;">Joi</a>
+    <a href="csurf.html" style="color:#fff; text-decoration:none; margin-right:15px;">CSRF</a>
+    <a href="xss-clean.html" style="color:#fff; text-decoration:none; margin-right:15px;">XSS Clean</a>
+    <a href="express-session.html" style="color:#fff; text-decoration:none; margin-right:15px;">Sessions</a>
+    <a href="jsonwebtoken.html" style="color:#fff; text-decoration:none; margin-right:15px;">JWT</a>
+    <a href="bcrypt.html" style="color:#fff; text-decoration:none; margin-right:15px;">Bcrypt</a>
+    <a href="mongoose.html" style="color:#fff; text-decoration:none; margin-right:15px;">Mongoose</a>
+    <a href="mysql2.html" style="color:#fff; text-decoration:none; margin-right:15px;">MySQL2</a>
+    <a href="winston.html" style="color:#fff; text-decoration:underline;">Winston</a>
+  </nav>
+  <h1>cors</h1>
+
+  <p><strong>Description :</strong> Middleware Express pour gérer la politique CORS (Cross-Origin Resource Sharing), qui contrôle les accès aux ressources selon l’origine des requêtes.</p>
+
+  <p><strong>Cas d'utilisation :</strong></p>
+  <ul>
+    <li>API et frontend hébergés sur des domaines différents</li>
+    <li>Applications SPA (Single Page Application) accédant à une API distante</li>
+    <li>Gestion fine des autorisations cross-domaines pour renforcer la sécurité</li>
+  </ul>
+
+  <p><strong>Pourquoi utiliser cors ?</strong></p>
+  <p>Les navigateurs bloquent par défaut les requêtes cross-origin non autorisées pour protéger les utilisateurs. Le middleware <code>cors</code> permet de déclarer explicitement quelles origines sont autorisées à accéder à votre API, évitant ainsi les erreurs CORS et réduisant la surface d'attaque.</p>
+
+  <div class="section-title">Installation</div>
+  <pre><code>npm install cors</code></pre>
+
+  <div class="section-title">Exemple simple (ESM)</div>
+  <pre><code>import express from 'express';
+import cors from 'cors';
+
+const app = express();
+
+// Autoriser uniquement les requêtes provenant de https://example.com
+app.use(cors({ origin: 'https://example.com' }));
+
+app.get('/', (req, res) => {
+  res.send('CORS configuré pour https://example.com');
+});
+
+app.listen(3000);</code></pre>
+
+  <div class="section-title">Options courantes</div>
+  <ul>
+    <li><code>origin</code> : <code>string</code>, <code>array</code> ou <code>function</code> définissant les origines autorisées. Peut être un domaine unique, un tableau de domaines, ou une fonction pour la validation dynamique.</li>
+    <li><code>methods</code> : méthodes HTTP autorisées (ex: <code>GET,POST,PUT</code>).</li>
+    <li><code>allowedHeaders</code> : liste des headers autorisés dans la requête.</li>
+    <li><code>credentials</code> : boolean, autorise l’envoi des cookies / authentification cross-origin.</li>
+    <li><code>preflightContinue</code> : si <code>true</code>, passe la gestion des requêtes OPTIONS au middleware suivant.</li>
+  </ul>
+
+  <div class="section-title">Exemple avancé : origine dynamique</div>
+  <pre><code>const whitelist = ['https://example.com', 'https://monautredomaine.com'];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true); // Requête serveur à serveur
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true); // Origine autorisée
+    } else {
+      callback(new Error('Origine non autorisée par CORS'));
+    }
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));</code></pre>
+
+  <div class="section-title">Bonnes pratiques</div>
+  <ul>
+    <li>Ne jamais utiliser <code>origin: '*'</code> en production si votre API manipule des données sensibles.</li>
+    <li>Privilégier une liste blanche (whitelist) précise des domaines autorisés.</li>
+    <li>Configurer <code>credentials: true</code> uniquement si vous avez besoin d’échanger des cookies ou tokens d’authentification.</li>
+    <li>Tester les requêtes CORS avec des outils comme Postman ou via navigateur pour valider la configuration.</li>
+  </ul>
+
+  <a href="../index.html" class="back-link">← Retour à l'index</a>
+</body>
+</html>

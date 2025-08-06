@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XSS Clean</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav style="background:#007acc; padding:10px;">
+    <a href="index.html" style="color:#fff; text-decoration:none; margin-right:15px;">Accueil</a>
+    <a href="helmet.html" style="color:#fff; text-decoration:none; margin-right:15px;">Helmet</a>
+    <a href="rate-limit.html" style="color:#fff; text-decoration:none; margin-right:15px;">Rate Limit</a>
+    <a href="cors.html" style="color:#fff; text-decoration:none; margin-right:15px;">CORS</a>
+    <a href="joi.html" style="color:#fff; text-decoration:none; margin-right:15px;">Joi</a>
+    <a href="csurf.html" style="color:#fff; text-decoration:none; margin-right:15px;">CSRF</a>
+    <a href="xss-clean.html" style="color:#fff; text-decoration:none; margin-right:15px;">XSS Clean</a>
+    <a href="express-session.html" style="color:#fff; text-decoration:none; margin-right:15px;">Sessions</a>
+    <a href="jsonwebtoken.html" style="color:#fff; text-decoration:none; margin-right:15px;">JWT</a>
+    <a href="bcrypt.html" style="color:#fff; text-decoration:none; margin-right:15px;">Bcrypt</a>
+    <a href="mongoose.html" style="color:#fff; text-decoration:none; margin-right:15px;">Mongoose</a>
+    <a href="mysql2.html" style="color:#fff; text-decoration:none; margin-right:15px;">MySQL2</a>
+    <a href="winston.html" style="color:#fff; text-decoration:underline;">Winston</a>
+  </nav>
+
+  <h1>Protection contre XSS avec xss-clean</h1>
+
+  <section>
+    <h2>Description</h2>
+    <p><code>xss-clean</code> est un middleware qui nettoie les entrées utilisateur pour supprimer les scripts malveillants (protection contre les attaques XSS).</p>
+  </section>
+
+  <section>
+    <h2>Cas d'utilisation</h2>
+    <p>Formulaires de contact, commentaires, champs de profil utilisateur ou tout point d’entrée manipulé par l’utilisateur.</p>
+  </section>
+
+  <section>
+    <h2>Pourquoi l'utiliser</h2>
+    <p>Les attaques XSS permettent d’injecter du code JavaScript dans une application via des entrées utilisateur. Cela peut entraîner le vol de cookies, le détournement de sessions ou d'autres actions malicieuses.</p>
+  </section>
+
+  <section>
+    <h2>Installation</h2>
+    <pre><code>npm install xss-clean</code></pre>
+  </section>
+
+  <section>
+    <h2>Exemple</h2>
+    <pre><code>import express from 'express';
+import xssClean from 'xss-clean';
+
+const app = express();
+
+app.use(express.json());
+app.use(xssClean());
+
+app.post('/message', (req, res) => {
+  const message = req.body.message;
+  res.send(`Message reçu : ${message}`);
+});
+
+app.listen(3000);
+</code></pre>
+  </section>
+
+  <section>
+    <h2>Explication</h2>
+    <p>
+      - <code>xss-clean()</code> inspecte le corps de la requête, les paramètres et les headers.<br>
+      - Il supprime automatiquement les balises ou scripts potentiellement dangereux.<br>
+      - Protège les routes sensibles des scripts injectés par l'utilisateur.
+    </p>
+  </section>
+  <footer style="margin-top:40px; padding:10px; border-top:1px solid #ccc; text-align:center; font-size:0.9em; color:#555;">
+  <p>Guide réalisé pour d'amuser</p>
+</footer>
+</body>
+</html>

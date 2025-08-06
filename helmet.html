@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Helmet - Sécurité Express</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav style="background:#007acc; padding:10px;">
+    <a href="index.html" style="color:#fff; text-decoration:none; margin-right:15px;">Accueil</a>
+    <a href="helmet.html" style="color:#fff; text-decoration:none; margin-right:15px;">Helmet</a>
+    <a href="rate-limit.html" style="color:#fff; text-decoration:none; margin-right:15px;">Rate Limit</a>
+    <a href="cors.html" style="color:#fff; text-decoration:none; margin-right:15px;">CORS</a>
+    <a href="joi.html" style="color:#fff; text-decoration:none; margin-right:15px;">Joi</a>
+    <a href="csurf.html" style="color:#fff; text-decoration:none; margin-right:15px;">CSRF</a>
+    <a href="xss-clean.html" style="color:#fff; text-decoration:none; margin-right:15px;">XSS Clean</a>
+    <a href="express-session.html" style="color:#fff; text-decoration:none; margin-right:15px;">Sessions</a>
+    <a href="jsonwebtoken.html" style="color:#fff; text-decoration:none; margin-right:15px;">JWT</a>
+    <a href="bcrypt.html" style="color:#fff; text-decoration:none; margin-right:15px;">Bcrypt</a>
+    <a href="mongoose.html" style="color:#fff; text-decoration:none; margin-right:15px;">Mongoose</a>
+    <a href="mysql2.html" style="color:#fff; text-decoration:none; margin-right:15px;">MySQL2</a>
+    <a href="winston.html" style="color:#fff; text-decoration:underline;">Winston</a>
+  </nav>
+
+  <h1>Helmet</h1>
+
+  <p><strong>Description :</strong> Helmet est un middleware pour Express.js qui configure automatiquement plusieurs headers HTTP pour renforcer la sécurité de votre application web.</p>
+
+  <p><strong>Cas d'utilisation :</strong></p>
+  <ul>
+    <li>Protéger contre les attaques Cross-Site Scripting (XSS)</li>
+    <li>Prévenir le clickjacking</li>
+    <li>Empêcher le sniffing de type MIME</li>
+    <li>Forcer le protocole HTTPS</li>
+  </ul>
+
+  <p><strong>Pourquoi utiliser Helmet ?</strong></p>
+  <p>Il est fastidieux et complexe de configurer manuellement les headers HTTP essentiels pour la sécurité. Helmet automatise cette configuration en fournissant une couche de protection simple à intégrer.</p>
+
+  <div class="section-title">Installation</div>
+  <pre><code>npm install helmet</code></pre>
+
+  <div class="section-title">Exemple d’utilisation (avec ESM)</div>
+  <pre><code>import express from 'express';
+import helmet from 'helmet';
+
+const app = express();
+
+// Active Helmet pour sécuriser les headers HTTP
+app.use(helmet());
+
+app.get('/', (req, res) => {
+  res.send('Headers HTTP sécurisés avec Helmet');
+});
+
+app.listen(3000, () => {
+  console.log('Serveur démarré sur http://localhost:3000');
+});
+</code></pre>
+
+  <div class="section-title">Que fait Helmet exactement ?</div>
+  <p>Helmet active par défaut plusieurs protections via headers HTTP :</p>
+  <ul>
+    <li><code>Strict-Transport-Security</code> : force l’usage de HTTPS sur le site</li>
+    <li><code>X-Frame-Options</code> : empêche que le site soit chargé dans un iframe (protection clickjacking)</li>
+    <li><code>X-Content-Type-Options</code> : empêche le navigateur de deviner le type MIME et de l’exécuter incorrectement</li>
+    <li><code>Referrer-Policy</code> : contrôle les informations envoyées dans le header Referer</li>
+    <li><code>Content-Security-Policy</code> (optionnel, à configurer) : limite les sources de contenu pour éviter les scripts malveillants</li>
+  </ul>
+
+  <div class="section-title">Personnalisation avancée</div>
+  <p>Helmet peut être configuré pour activer/désactiver certains headers, ou personnaliser leur comportement. Par exemple, pour désactiver le CSP :</p>
+  <pre><code>app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);</code></pre>
+
+  <p>Ou pour configurer une politique CSP stricte :</p>
+  <pre><code>app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", 'trusted-scripts.com'],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  })
+);</code></pre>
+
+  <div class="section-title">Conseils pratiques</div>
+  <ul>
+    <li>Utilisez Helmet dès le début du projet pour éviter les oublis.</li>
+    <li>Testez vos headers via des outils en ligne comme <a href="https://securityheaders.com" target="_blank" rel="noopener noreferrer">securityheaders.com</a>.</li>
+    <li>Si vous utilisez HTTPS, configurez strictement le header <code>Strict-Transport-Security</code>.</li>
+    <li>Complétez Helmet avec d’autres protections (rate limiting, validation des données, etc.).</li>
+  </ul>
+
+  <a href="../index.html" class="back-link">← Retour à l'index</a>
+</body>
+</html>

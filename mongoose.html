@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Utilisation sécurisée de Mongoose - Sécurité Express</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav style="background:#007acc; padding:10px;">
+    <a href="index.html" style="color:#fff; text-decoration:none; margin-right:15px;">Accueil</a>
+    <a href="helmet.html" style="color:#fff; text-decoration:none; margin-right:15px;">Helmet</a>
+    <a href="rate-limit.html" style="color:#fff; text-decoration:none; margin-right:15px;">Rate Limit</a>
+    <a href="cors.html" style="color:#fff; text-decoration:none; margin-right:15px;">CORS</a>
+    <a href="joi.html" style="color:#fff; text-decoration:none; margin-right:15px;">Joi</a>
+    <a href="csurf.html" style="color:#fff; text-decoration:none; margin-right:15px;">CSRF</a>
+    <a href="xss-clean.html" style="color:#fff; text-decoration:none; margin-right:15px;">XSS Clean</a>
+    <a href="express-session.html" style="color:#fff; text-decoration:none; margin-right:15px;">Sessions</a>
+    <a href="jsonwebtoken.html" style="color:#fff; text-decoration:none; margin-right:15px;">JWT</a>
+    <a href="bcrypt.html" style="color:#fff; text-decoration:none; margin-right:15px;">Bcrypt</a>
+    <a href="mongoose.html" style="color:#fff; text-decoration:none; margin-right:15px; font-weight:bold;">Mongoose</a>
+    <a href="mysql2.html" style="color:#fff; text-decoration:none; margin-right:15px;">MySQL2</a>
+    <a href="winston.html" style="color:#fff; text-decoration:none;">Winston</a>
+  </nav>
+
+  <main>
+    <h1>Utilisation sécurisée de <code>mongoose</code> avec Node.js</h1>
+
+    <p><code>mongoose</code> est une bibliothèque ODM (Object Data Modeling) pour MongoDB, facilitant la manipulation des données et la définition de schémas dans une application Node.js.</p>
+
+    <h2>Installation</h2>
+    <pre><code>npm install mongoose</code></pre>
+
+    <h2>Connexion à MongoDB</h2>
+    <pre><code>const mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost:27017/maBase')
+.then(() => console.log('Connexion à MongoDB réussie'))
+.catch(err => console.error('Erreur connexion MongoDB :', err));</code></pre>
+
+    <h2>Définition d’un schéma sécurisé</h2>
+    <p>Utilisez les validations intégrées et la gestion des types pour éviter l’injection et données invalides.</p>
+
+    <pre><code>const userSchema = new mongoose.Schema({
+  username: { type: String, required: true, unique: true, minlength: 3, maxlength: 30 },
+  email: { type: String, required: true, unique: true, match: /.+\@.+\..+/ },
+  passwordHash: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
+// Création du modèle
+const User = mongoose.model('User', userSchema);</code></pre>
+
+    <h2>Bonnes pratiques de sécurité</h2>
+    <ul>
+      <li><strong>Validation stricte :</strong> Utilisez les options de schéma pour valider les données.</li>
+      <li><strong>Éviter les injections :</strong> N’utilisez jamais directement les données non filtrées dans les requêtes MongoDB. Mongoose protège contre les injections si vous utilisez ses méthodes correctement.</li>
+      <li><strong>Gestion des erreurs :</strong> Toujours gérer les erreurs des opérations asynchrones pour éviter les fuites d’informations sensibles.</li>
+      <li><strong>Connexion sécurisée :</strong> En production, connectez-vous à MongoDB via TLS/SSL et gérez vos credentials avec des variables d’environnement.</li>
+      <li><strong>Limitation des champs retournés :</strong> Ne retournez pas les mots de passe ou données sensibles.</li>
+    </ul>
+
+    <h2>Exemple simple d’utilisation</h2>
+    <pre><code>// Création d’un utilisateur
+async function createUser() {
+  try {
+    const user = new User({
+      username: 'toto',
+      email: 'toto@example.com',
+      passwordHash: 'hash_secure'
+    });
+    await user.save();
+    console.log('Utilisateur créé');
+  } catch (error) {
+    console.error('Erreur création utilisateur:', error.message);
+  }
+}
+
+createUser();</code></pre>
+
+    <h2>Conclusion</h2>
+    <p><code>mongoose</code> facilite l’interaction avec MongoDB tout en offrant des outils pour sécuriser vos données grâce à des schémas bien définis et une validation stricte. Combinez-le toujours avec une validation d’entrée côté serveur (ex : Joi) et un système d’authentification sécurisé.</p>
+  </main>
+</body>
+</html>

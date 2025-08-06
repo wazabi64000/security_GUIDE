@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Express Session</title>
+<link rel="stylesheet" href="style.css">
+<body>
+  <nav style="background:#007acc; padding:10px;">
+    <a href="index.html" style="color:#fff; text-decoration:none; margin-right:15px;">Accueil</a>
+    <a href="helmet.html" style="color:#fff; text-decoration:none; margin-right:15px;">Helmet</a>
+    <a href="rate-limit.html" style="color:#fff; text-decoration:none; margin-right:15px;">Rate Limit</a>
+    <a href="cors.html" style="color:#fff; text-decoration:none; margin-right:15px;">CORS</a>
+    <a href="joi.html" style="color:#fff; text-decoration:none; margin-right:15px;">Joi</a>
+    <a href="csurf.html" style="color:#fff; text-decoration:none; margin-right:15px;">CSRF</a>
+    <a href="xss-clean.html" style="color:#fff; text-decoration:none; margin-right:15px;">XSS Clean</a>
+    <a href="express-session.html" style="color:#fff; text-decoration:none; margin-right:15px;">Sessions</a>
+    <a href="jsonwebtoken.html" style="color:#fff; text-decoration:none; margin-right:15px;">JWT</a>
+    <a href="bcrypt.html" style="color:#fff; text-decoration:none; margin-right:15px;">Bcrypt</a>
+    <a href="mongoose.html" style="color:#fff; text-decoration:none; margin-right:15px;">Mongoose</a>
+    <a href="mysql2.html" style="color:#fff; text-decoration:none; margin-right:15px;">MySQL2</a>
+    <a href="winston.html" style="color:#fff; text-decoration:underline;">Winston</a>
+  </nav>
+
+  <h1>Gestion des sessions avec express-session</h1>
+
+  <section>
+    <h2>Description</h2>
+    <p><code>express-session</code> permet de stocker des données utilisateur entre les requêtes HTTP sur le serveur.</p>
+  </section>
+
+  <section>
+    <h2>Cas d'utilisation</h2>
+    <p>Authentification avec sessions, paniers d’achat, préférences utilisateur temporaires.</p>
+  </section>
+
+  <section>
+    <h2>Pourquoi l'utiliser</h2>
+    <p>Permet de maintenir un état entre plusieurs requêtes HTTP pour chaque utilisateur sans utiliser de token côté client.</p>
+  </section>
+
+  <section>
+    <h2>Installation</h2>
+    <pre><code>npm install express-session</code></pre>
+  </section>
+
+  <section>
+    <h2>Exemple</h2>
+    <pre><code>import express from 'express';
+import session from 'express-session';
+
+const app = express();
+
+app.use(session({
+  secret: 'ma-cle-secrete',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // mettre true si HTTPS
+}));
+
+app.get('/', (req, res) => {
+  if (!req.session.views) {
+    req.session.views = 1;
+  } else {
+    req.session.views++;
+  }
+  res.send(`Nombre de vues : ${req.session.views}`);
+});
+
+app.listen(3000);
+</code></pre>
+  </section>
+
+  <section>
+    <h2>Explication</h2>
+    <p>
+      - <code>req.session</code> est utilisé pour stocker des données spécifiques à un utilisateur.<br>
+      - Les cookies de session sont envoyés au navigateur, qui les retourne à chaque requête.<br>
+      - Le serveur garde les données de session en mémoire (en production, il est recommandé d’utiliser Redis ou une base de données).
+    </p>
+  </section>
+</body>
+</html>

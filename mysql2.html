@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>mysql2 - Sécuriser MySQL avec requêtes préparées</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav style="background:#007acc; padding:10px;">
+    <a href="index.html" style="color:#fff; text-decoration:none; margin-right:15px;">Accueil</a>
+    <a href="helmet.html" style="color:#fff; text-decoration:none; margin-right:15px;">Helmet</a>
+    <a href="rate-limit.html" style="color:#fff; text-decoration:none; margin-right:15px;">Rate Limit</a>
+    <a href="cors.html" style="color:#fff; text-decoration:none; margin-right:15px;">CORS</a>
+    <a href="joi.html" style="color:#fff; text-decoration:none; margin-right:15px;">Joi</a>
+    <a href="csurf.html" style="color:#fff; text-decoration:none; margin-right:15px;">CSRF</a>
+    <a href="xss-clean.html" style="color:#fff; text-decoration:none; margin-right:15px;">XSS Clean</a>
+    <a href="express-session.html" style="color:#fff; text-decoration:none; margin-right:15px;">Sessions</a>
+    <a href="jsonwebtoken.html" style="color:#fff; text-decoration:none; margin-right:15px;">JWT</a>
+    <a href="bcrypt.html" style="color:#fff; text-decoration:none; margin-right:15px;">Bcrypt</a>
+    <a href="mongoose.html" style="color:#fff; text-decoration:none; margin-right:15px;">Mongoose</a>
+    <a href="mysql2.html" style="color:#fff; text-decoration:underline; margin-right:15px;">MySQL2</a>
+    <a href="winston.html" style="color:#fff; text-decoration:none;">Winston</a>
+  </nav>
+
+  <main style="padding:20px; max-width:900px;">
+    <h1>mysql2 - Sécuriser MySQL avec requêtes préparées</h1>
+
+    <p><strong>Description :</strong> mysql2 est un client MySQL pour Node.js qui supporte les requêtes préparées, permettant d'éviter les injections SQL.</p>
+
+    <p><strong>Cas d'utilisation :</strong> Accès sécurisé à une base MySQL, applications web avec formulaires ou APIs.</p>
+
+    <p><strong>Pourquoi :</strong> Les requêtes préparées séparent les données des commandes SQL, évitant ainsi les injections malveillantes.</p>
+
+    <p><strong>Installation :</strong></p>
+    <pre><code>npm install mysql2</code></pre>
+
+    <p><strong>Exemple :</strong></p>
+    <pre><code>import mysql from 'mysql2/promise';
+
+async function main() {
+  const connection = await mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    database: 'testdb',
+    password: 'votre_mot_de_passe'
+  });
+
+  const userId = 1; // Exemple d'entrée utilisateur sécurisée
+
+  // Requête préparée sécurisée
+  const [rows] = await connection.execute('SELECT * FROM users WHERE id = ?', [userId]);
+
+  console.log(rows);
+  await connection.end();
+}
+
+main().catch(console.error);
+</code></pre>
+
+    <p><strong>Explication :</strong> La requête utilise un placeholder <code>?</code> pour intégrer la variable <code>userId</code>. mysql2 s'assure que cette valeur est sécurisée et échappée, empêchant toute injection SQL.</p>
+  </main>
+  <footer style="margin-top:40px; padding:10px; border-top:1px solid #ccc; text-align:center; font-size:0.9em; color:#555;">
+  <p>Guide réalisé pour d'amuser</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>jsonwebtoken</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav style="background:#007acc; padding:10px;">
+    <a href="index.html" style="color:#fff; text-decoration:none; margin-right:15px;">Accueil</a>
+    <a href="helmet.html" style="color:#fff; text-decoration:none; margin-right:15px;">Helmet</a>
+    <a href="rate-limit.html" style="color:#fff; text-decoration:none; margin-right:15px;">Rate Limit</a>
+    <a href="cors.html" style="color:#fff; text-decoration:none; margin-right:15px;">CORS</a>
+    <a href="joi.html" style="color:#fff; text-decoration:none; margin-right:15px;">Joi</a>
+    <a href="csurf.html" style="color:#fff; text-decoration:none; margin-right:15px;">CSRF</a>
+    <a href="xss-clean.html" style="color:#fff; text-decoration:none; margin-right:15px;">XSS Clean</a>
+    <a href="express-session.html" style="color:#fff; text-decoration:none; margin-right:15px;">Sessions</a>
+    <a href="jsonwebtoken.html" style="color:#fff; text-decoration:underline; margin-right:15px;">JWT</a>
+    <a href="bcrypt.html" style="color:#fff; text-decoration:none; margin-right:15px;">Bcrypt</a>
+    <a href="mongoose.html" style="color:#fff; text-decoration:none; margin-right:15px;">Mongoose</a>
+    <a href="mysql2.html" style="color:#fff; text-decoration:none; margin-right:15px;">MySQL2</a>
+    <a href="winston.html" style="color:#fff; text-decoration:none;">Winston</a>
+  </nav>
+
+  <main>
+    
+  <h1>jsonwebtoken - Gestion avancée des JSON Web Tokens (JWT)</h1>
+
+  <section>
+    <h2>1. Qu’est-ce qu’un JSON Web Token (JWT) ?</h2>
+    <p>
+      Un JWT est un <em>jeton sécurisé</em> utilisé pour représenter des informations d'identification entre un client (ex : navigateur) et un serveur.
+    </p>
+    <p>
+      Il se compose de trois parties codées en base64, séparées par des points :<br>
+      <code>header.payload.signature</code>
+    </p>
+    <ul>
+      <li><strong>Header</strong> : décrit l’algorithme de signature utilisé et le type (JWT).</li>
+      <li><strong>Payload</strong> : contient les données, appelées <em>claims</em>, comme l’identifiant utilisateur.</li>
+      <li><strong>Signature</strong> : permet de vérifier que le token n’a pas été altéré. Elle est créée en signant la concaténation du header et payload avec une clé secrète.</li>
+    </ul>
+    <p>Exemple de JWT (décodé) :</p>
+    <pre s>
+Header : { "alg": "HS256", "typ": "JWT" }
+Payload : { "user": "alice", "iat": 1629999999, "exp": 1630003599 }
+Signature : <signature>
+    </pre>
+  </section>
+
+  <section>
+    <h2>2. Pourquoi utiliser JWT avec <code>jsonwebtoken</code> ?</h2>
+    <p>
+      <code>jsonwebtoken</code> est une bibliothèque Node.js permettant de créer et vérifier facilement ces tokens en s’occupant de la signature, vérification, expiration, etc.
+    </p>
+>
+    <p>Avantages :</p>
+    <ul>
+      <li><strong>Stateless</strong> : pas besoin de stocker la session côté serveur, le token contient tout.</li>
+      <li><strong>Sécurisé</strong> : signature garantit l'intégrité des données.</li>
+      <li><strong>Flexible</strong> : on peut mettre des données personnalisées dans le payload (user roles, permissions, etc.).</li>
+      <li><strong>Interopérable</strong> : JWT est un standard supporté partout (frontend, mobile, APIs).</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>3. Installation de la bibliothèque</h2>
+    <p>Pour utiliser <code>jsonwebtoken</code>, il faut l’installer via npm :</p>
+    <pre s>
+npm install jsonwebtoken
+    </pre>
+  </section>
+
+  <section>
+    <h2>4. Exemple complet avec explications ligne par ligne</h2>
+    <pre s>
+import express from 'express';
+import jwt from 'jsonwebtoken';
+
+const app = express();
+// Middleware pour parser le corps JSON des requêtes
+app.use(express.json());
+
+// Clé secrète utilisée pour signer et vérifier les tokens.
+// Cette clé doit être complexe et gardée confidentielle.
+const SECRET_KEY = 'votre_clé_secrète';
+
+// Route POST pour générer un token lors de la connexion
+app.post('/login', (req, res) => {
+  // Récupère le nom d’utilisateur envoyé par le client
+  const { username } = req.body;
+
+  // 1. Création du token
+  // - payload contient l’information d’utilisateur
+  // - SECRET_KEY garantit la signature
+  // - expiresIn définit la durée de validité (ici 1 heure)
+  const token = jwt.sign({ user: username }, SECRET_KEY, { expiresIn: '1h' });
+
+  // Retourne le token au client (ex: frontend)
+  res.json({ token });
+});
+
+// Route GET protégée, accessible seulement avec un token valide
+app.get('/protected', (req, res) => {
+  // 2. Extraction du token depuis l’en-tête Authorization
+  // Format attendu : "Bearer <token>"
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  // 3. Vérifie si le token est présent
+  if (!token) return res.sendStatus(401); // 401 = Non autorisé
+
+  // 4. Vérification du token (signature + validité)
+  jwt.verify(token, SECRET_KEY, (err, user) => {
+    if (err) return res.sendStatus(403); // 403 = Interdit (token invalide ou expiré)
+
+    // Si token valide, renvoie un message + données utilisateur contenues dans le token
+    res.json({ message: 'Accès autorisé', user });
+  });
+});
+
+app.listen(3000);
+    </pre>
+
+    <h3>Détails techniques :</h3>
+    <ul>
+      <li><code>jwt.sign(payload, secret, options)</code> : crée un token signé, ici le payload contient { user: username }.</li>
+      <li><code>expiresIn</code> : définit la durée pendant laquelle le token est valide (ici 1 heure).</li>
+      <li><code>Authorization</code> header : méthode standard pour envoyer un token, sous format "Bearer token".</li>
+      <li><code>jwt.verify(token, secret, callback)</code> : vérifie la signature et la validité du token, puis exécute le callback.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>5. Comprendre le cycle de vie d’un JWT dans cette app</h2>
+    <ol>
+      <li>Le client envoie son identifiant via la route <code>/login</code>.</li>
+      <li>Le serveur génère un JWT signé et renvoie ce token au client.</li>
+      <li>Le client stocke ce token localement (ex: localStorage, cookies sécurisés).</li>
+      <li>Pour accéder aux routes protégées (<code>/protected</code>), le client envoie le token dans l’en-tête <code>Authorization</code>.</li>
+      <li>Le serveur vérifie ce token : s’il est valide et non expiré, il autorise l’accès.</li>
+      <li>Sinon, il refuse l’accès avec un code HTTP adéquat (401 ou 403).</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>6. Sécurité et bonnes pratiques</h2>
+    <ul>
+      <li><strong>Clé secrète robuste :</strong> Utilisez une clé secrète longue, aléatoire, et stockée en variable d’environnement.</li>
+      <li><strong>Expiration courte :</strong> Limitez la durée de validité du token pour réduire les risques.</li>
+      <li><strong>HTTPS :</strong> Utilisez toujours HTTPS pour éviter l’interception des tokens.</li>
+      <li><strong>Stockage sécurisé :</strong> Stockez les tokens côté client dans des cookies HttpOnly ou localStorage en fonction du contexte.</li>
+      <li><strong>Rotation de tokens :</strong> Implémentez un mécanisme pour renouveler ou révoquer les tokens si besoin.</li>
+      <li><strong>Ne mettez pas d’informations sensibles dans le payload :</strong> Tout ce qui est dans le token peut être décodé côté client.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>7. Résumé visuel du flux JWT</h2>
+    <pre >
+[Client]              [Serveur]
+
+   |---- POST /login (username) ---->|
+   |                                |
+   |<------- JWT Token --------------|
+   |                                |
+   |---- GET /protected (Authorization: Bearer &lt;token&gt;) ---->|
+   |                                                         |
+   |<------ Accès autorisé ou refusé -----------------------|
+    </pre>
+  </section>
+
+
+    <p><strong>Explication :</strong> Un token est généré après connexion, puis utilisé pour protéger les routes en vérifiant sa validité à chaque requête.</p>
+  </main>
+</body>
+</html>

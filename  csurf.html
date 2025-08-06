@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSRF - csurf</title>
+<link rel="stylesheet" href="style.css">
+
+<body>
+  <nav style="background:#007acc; padding:10px;">
+    <a href="index.html" style="color:#fff; text-decoration:none; margin-right:15px;">Accueil</a>
+    <a href="helmet.html" style="color:#fff; text-decoration:none; margin-right:15px;">Helmet</a>
+    <a href="rate-limit.html" style="color:#fff; text-decoration:none; margin-right:15px;">Rate Limit</a>
+    <a href="cors.html" style="color:#fff; text-decoration:none; margin-right:15px;">CORS</a>
+    <a href="joi.html" style="color:#fff; text-decoration:none; margin-right:15px;">Joi</a>
+    <a href="csurf.html" style="color:#fff; text-decoration:none; margin-right:15px;">CSRF</a>
+    <a href="xss-clean.html" style="color:#fff; text-decoration:none; margin-right:15px;">XSS Clean</a>
+    <a href="express-session.html" style="color:#fff; text-decoration:none; margin-right:15px;">Sessions</a>
+    <a href="jsonwebtoken.html" style="color:#fff; text-decoration:none; margin-right:15px;">JWT</a>
+    <a href="bcrypt.html" style="color:#fff; text-decoration:none; margin-right:15px;">Bcrypt</a>
+    <a href="mongoose.html" style="color:#fff; text-decoration:none; margin-right:15px;">Mongoose</a>
+    <a href="mysql2.html" style="color:#fff; text-decoration:none; margin-right:15px;">MySQL2</a>
+    <a href="winston.html" style="color:#fff; text-decoration:underline;">Winston</a>
+  </nav>
+
+  <h1>Protection CSRF avec csurf</h1>
+
+  <section>
+    <h2>Description</h2>
+    <p><code>csurf</code> est un middleware Express qui protège contre les attaques CSRF (Cross-Site Request Forgery) en exigeant un token valide dans les requêtes.</p>
+  </section>
+
+  <section>
+    <h2>Cas d'utilisation</h2>
+    <p>Applications avec formulaires POST, PUT ou DELETE, notamment les tableaux de bord, interfaces admin, ou tout formulaire sensible.</p>
+  </section>
+
+  <section>
+    <h2>Pourquoi l'utiliser</h2>
+    <p>Les attaques CSRF utilisent les cookies de session de l’utilisateur pour envoyer des requêtes malveillantes. csurf empêche ces requêtes si elles ne contiennent pas un token valide généré côté serveur.</p>
+  </section>
+
+  <section>
+    <h2>Installation</h2>
+    <pre><code>npm install csurf</code></pre>
+  </section>
+
+  <section>
+    <h2>Exemple</h2>
+    <pre><code>import express from 'express';
+import session from 'express-session';
+import csrf from 'csurf';
+
+const app = express();
+
+app.use(session({
+  secret: 'secret',
+  resave: false,
+  saveUninitialized: true
+}));
+
+app.use(express.urlencoded({ extended: true }));
+
+const csrfProtection = csrf();
+app.use(csrfProtection);
+
+app.get('/form', (req, res) => {
+  res.send(`
+    <form action="/process" method="POST">
+      <input type="hidden" name="_csrf" value="${req.csrfToken()}">
+      <input type="text" name="data">
+      <button type="submit">Envoyer</button>
+    </form>
+  `);
+});
+
+app.post('/process', (req, res) => {
+  res.send('Requête sécurisée et traitée');
+});
+
+app.listen(3000);
+</code></pre>
+  </section>
+
+  <section>
+    <h2>Explication</h2>
+    <p>
+      - <code>express-session</code> est requis pour stocker les tokens côté serveur.<br>
+      - <code>req.csrfToken()</code> génère un token à injecter dans les formulaires.<br>
+      - Toute requête POST doit fournir ce token, sinon elle est bloquée.
+    </p>
+  </section>
+</body>
+</html>

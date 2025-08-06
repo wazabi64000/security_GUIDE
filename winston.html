@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>winston - Logger les erreurs</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav style="background:#007acc; padding:10px;">
+    <a href="index.html" style="color:#fff; text-decoration:none; margin-right:15px;">Accueil</a>
+    <a href="helmet.html" style="color:#fff; text-decoration:none; margin-right:15px;">Helmet</a>
+    <a href="rate-limit.html" style="color:#fff; text-decoration:none; margin-right:15px;">Rate Limit</a>
+    <a href="cors.html" style="color:#fff; text-decoration:none; margin-right:15px;">CORS</a>
+    <a href="joi.html" style="color:#fff; text-decoration:none; margin-right:15px;">Joi</a>
+    <a href="csurf.html" style="color:#fff; text-decoration:none; margin-right:15px;">CSRF</a>
+    <a href="xss-clean.html" style="color:#fff; text-decoration:none; margin-right:15px;">XSS Clean</a>
+    <a href="express-session.html" style="color:#fff; text-decoration:none; margin-right:15px;">Sessions</a>
+    <a href="jsonwebtoken.html" style="color:#fff; text-decoration:none; margin-right:15px;">JWT</a>
+    <a href="bcrypt.html" style="color:#fff; text-decoration:none; margin-right:15px;">Bcrypt</a>
+    <a href="mongoose.html" style="color:#fff; text-decoration:none; margin-right:15px;">Mongoose</a>
+    <a href="mysql2.html" style="color:#fff; text-decoration:none; margin-right:15px;">MySQL2</a>
+    <a href="winston.html" style="color:#fff; text-decoration:underline;">Winston</a>
+  </nav>
+
+  <main style="padding:20px; max-width:900px;">
+    <h1>winston - Logger les erreurs</h1>
+
+    <p><strong>Description :</strong> Winston est une bibliothèque de journalisation flexible pour Node.js, permettant d’enregistrer les erreurs et autres informations dans différents formats et destinations.</p>
+
+    <p><strong>Cas d'utilisation :</strong> Logger les erreurs, événements importants, pour le debugging et la surveillance en production.</p>
+
+    <p><strong>Pourquoi :</strong> Permet de centraliser la journalisation, garder un historique et éviter d'exposer les erreurs directement à l'utilisateur.</p>
+
+    <p><strong>Installation :</strong></p>
+    <pre><code>npm install winston</code></pre>
+
+    <p><strong>Exemple :</strong></p>
+    <pre><code>import winston from 'winston';
+
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.File({ filename: 'error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'combined.log' }),
+  ],
+});
+
+if (process.env.NODE_ENV !== 'production') {
+  logger.add(new winston.transports.Console({
+    format: winston.format.simple(),
+  }));
+}
+
+// Exemple d'utilisation
+logger.info('Serveur démarré');
+logger.error('Erreur critique détectée');</code></pre>
+
+    <p><strong>Explication :</strong> Winston configure deux fichiers de logs (un pour les erreurs, un pour tous les logs) et affiche aussi les logs en console en mode développement.</p>
+  </main>
+  <footer style="margin-top:40px; padding:10px; border-top:1px solid #ccc; text-align:center; font-size:0.9em; color:#555;">
+  <p>Guide réalisé pour d'amuser</p>
+</footer>
+</body>
+</html>

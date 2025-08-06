@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Joi - Validation des entrées</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav style="background:#007acc; padding:10px;">
+    <a href="index.html" style="color:#fff; text-decoration:none; margin-right:15px;">Accueil</a>
+    <a href="helmet.html" style="color:#fff; text-decoration:none; margin-right:15px;">Helmet</a>
+    <a href="rate-limit.html" style="color:#fff; text-decoration:none; margin-right:15px;">Rate Limit</a>
+    <a href="cors.html" style="color:#fff; text-decoration:none; margin-right:15px;">CORS</a>
+    <a href="joi.html" style="color:#fff; text-decoration:none; margin-right:15px;">Joi</a>
+    <a href="csurf.html" style="color:#fff; text-decoration:none; margin-right:15px;">CSRF</a>
+    <a href="xss-clean.html" style="color:#fff; text-decoration:none; margin-right:15px;">XSS Clean</a>
+    <a href="express-session.html" style="color:#fff; text-decoration:none; margin-right:15px;">Sessions</a>
+    <a href="jsonwebtoken.html" style="color:#fff; text-decoration:none; margin-right:15px;">JWT</a>
+    <a href="bcrypt.html" style="color:#fff; text-decoration:none; margin-right:15px;">Bcrypt</a>
+    <a href="mongoose.html" style="color:#fff; text-decoration:none; margin-right:15px;">Mongoose</a>
+    <a href="mysql2.html" style="color:#fff; text-decoration:none; margin-right:15px;">MySQL2</a>
+    <a href="winston.html" style="color:#fff; text-decoration:underline;">Winston</a>
+  </nav>
+
+<h1>Joi - Validation des entrées</h1>
+
+<p><strong>Description :</strong> Joi est une bibliothèque de validation puissante permettant de définir des schémas de données robustes pour valider les entrées utilisateur côté serveur.</p>
+
+<p><strong>Cas d'utilisation :</strong> Validation des corps de requêtes (body), paramètres d’URL, query strings ou headers dans une API REST ou une application web.</p>
+
+<p><strong>Pourquoi :</strong> Joi permet une validation claire, fiable, réutilisable et centralisée des données, réduisant les risques d’injection, erreurs de type ou données manquantes.</p>
+
+<p><strong>Installation :</strong></p>
+<pre><code>npm install joi</code></pre>
+
+<p><strong>Exemple (ESM) :</strong></p>
+<pre><code>import express from 'express';
+import Joi from 'joi';
+
+const app = express();
+app.use(express.json());
+
+// Définition du schéma Joi
+const userSchema = Joi.object({
+  name: Joi.string().min(3).required(),
+  email: Joi.string().email().required(),
+  age: Joi.number().integer().min(18).max(99)
+});
+
+// Middleware de validation
+function validateUser(req, res, next) {
+  const { error } = userSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+  next();
+}
+
+// Route POST avec validation
+app.post('/users', validateUser, (req, res) => {
+  res.status(200).json({ message: 'Utilisateur valide', data: req.body });
+});
+
+app.listen(3000, () => {
+  console.log('Serveur démarré sur http://localhost:3000');
+});
+</code></pre>
+
+<h2>Explication du code :</h2>
+<ul>
+  <li><code>Joi.object({...})</code> : On crée un schéma qui impose des règles strictes.</li>
+  <li><code>validateUser</code> : Middleware qui intercepte la requête et la valide avant qu'elle n'arrive à la route principale.</li>
+  <li><code>Joi.string().min(3).required()</code> : Le champ <code>name</code> doit être une chaîne de caractères de 3 caractères minimum.</li>
+  <li><code>Joi.string().email().required()</code> : Le champ <code>email</code> doit être un email valide.</li>
+  <li><code>Joi.number().integer().min(18)</code> : Le champ <code>age</code> doit être un entier entre 18 et 99.</li>
+  <li>En cas d’erreur, le message d’erreur est renvoyé au client avec un statut <code>400</code>.</li>
+</ul>
+
+</body>
+</html>

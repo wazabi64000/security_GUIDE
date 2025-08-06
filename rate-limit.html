@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>express-rate-limit</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav style="background:#007acc; padding:10px;">
+    <a href="index.html" style="color:#fff; text-decoration:none; margin-right:15px;">Accueil</a>
+    <a href="helmet.html" style="color:#fff; text-decoration:none; margin-right:15px;">Helmet</a>
+    <a href="rate-limit.html" style="color:#fff; text-decoration:none; margin-right:15px;">Rate Limit</a>
+    <a href="cors.html" style="color:#fff; text-decoration:none; margin-right:15px;">CORS</a>
+    <a href="joi.html" style="color:#fff; text-decoration:none; margin-right:15px;">Joi</a>
+    <a href="csurf.html" style="color:#fff; text-decoration:none; margin-right:15px;">CSRF</a>
+    <a href="xss-clean.html" style="color:#fff; text-decoration:none; margin-right:15px;">XSS Clean</a>
+    <a href="express-session.html" style="color:#fff; text-decoration:none; margin-right:15px;">Sessions</a>
+    <a href="jsonwebtoken.html" style="color:#fff; text-decoration:none; margin-right:15px;">JWT</a>
+    <a href="bcrypt.html" style="color:#fff; text-decoration:none; margin-right:15px;">Bcrypt</a>
+    <a href="mongoose.html" style="color:#fff; text-decoration:none; margin-right:15px;">Mongoose</a>
+    <a href="mysql2.html" style="color:#fff; text-decoration:none; margin-right:15px;">MySQL2</a>
+    <a href="winston.html" style="color:#fff; text-decoration:underline;">Winston</a>
+  </nav>
+
+    <h1>express-rate-limit</h1>
+
+  <p><strong>Description :</strong> Middleware Express qui limite le nombre de requêtes qu’un client (IP) peut effectuer sur une période donnée.</p>
+
+  <p><strong>Cas d'utilisation :</strong></p>
+  <ul>
+    <li>Protéger les API publiques contre les abus</li>
+    <li>Limiter les tentatives de connexion pour éviter les attaques par force brute</li>
+    <li>Réduire la charge serveur en filtrant les requêtes excessives</li>
+  </ul>
+
+  <p><strong>Pourquoi utiliser express-rate-limit ?</strong></p>
+  <p>Sans limitation, un utilisateur malveillant peut bombarder votre serveur de requêtes, provoquant ralentissements, épuisement de ressources, voire indisponibilité (DDoS). Ce module impose un seuil raisonnable pour chaque client, améliorant la résilience de l’application.</p>
+
+  <div class="section-title">Installation</div>
+  <pre><code>npm install express-rate-limit</code></pre>
+
+  <div class="section-title">Exemple d’utilisation (ESM)</div>
+  <pre><code>import express from 'express';
+import rateLimit from 'express-rate-limit';
+
+const app = express();
+
+// Configuration du limiteur
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limite chaque IP à 100 requêtes par fenêtre
+  message: 'Trop de requêtes depuis cette IP, veuillez réessayer plus tard.',
+  standardHeaders: true, // Retourne les headers RateLimit standard
+  legacyHeaders: false, // Désactive les headers obsolètes
+});
+
+// Application du middleware globalement
+app.use(limiter);
+
+app.get('/', (req, res) => {
+  res.send('Limitation des requêtes active');
+});
+
+app.listen(3000, () => {
+  console.log('Serveur démarré sur http://localhost:3000');
+});
+</code></pre>
+
+  <div class="section-title">Options principales</div>
+  <ul>
+    <li><code>windowMs</code> : durée de la fenêtre (en millisecondes) sur laquelle le compteur de requêtes est calculé</li>
+    <li><code>max</code> : nombre maximum de requêtes autorisées par IP dans la fenêtre</li>
+    <li><code>message</code> : message renvoyé lorsque la limite est atteinte (string ou JSON)</li>
+    <li><code>standardHeaders</code> : si <code>true</code>, active les headers standard <code>RateLimit-* </code> pour informer le client</li>
+    <li><code>legacyHeaders</code> : si <code>false</code>, désactive les anciens headers <code>X-RateLimit-* </code></li>
+    <li><code>keyGenerator</code> : fonction personnalisée pour définir la clé client (par défaut l’adresse IP)</li>
+    <li><code>skip</code> : fonction pour ignorer la limitation pour certaines requêtes (ex : IP internes)</li>
+  </ul>
+
+  <div class="section-title">Exemple avancé avec gestion d’erreur personnalisée</div>
+  <pre><code>const limiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 50,
+  handler: (req, res) => {
+    res.status(429).json({
+      error: 'Vous avez dépassé la limite de requêtes. Merci de patienter 10 minutes.'
+    });
+  },
+});</code></pre>
+
+  <div class="section-title">Conseils pratiques</div>
+  <ul>
+    <li>Appliquez express-rate-limit sur les routes sensibles (authentification, reset mot de passe).</li>
+    <li>Ne limitez pas trop strictement pour éviter de bloquer des utilisateurs légitimes.</li>
+    <li>Combinez avec un firewall ou un CDN pour protéger contre les attaques DDoS à plus grande échelle.</li>
+    <li>Surveillez vos logs pour ajuster les paramètres en fonction du trafic réel.</li>
+  </ul>
+<footer style="margin-top:40px; padding:10px; border-top:1px solid #ccc; text-align:center; font-size:0.9em; color:#555;">
+  <p>Guide réalisé pour d'amuser</p>
+</footer>
+</body>
+</html>

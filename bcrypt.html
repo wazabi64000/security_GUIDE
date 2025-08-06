@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>bcrypt</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav style="background:#007acc; padding:10px;">
+    <a href="../index.html" style="color:#fff; text-decoration:none; margin-right:15px;">Accueil</a>
+    <a href="helmet.html" style="color:#fff; text-decoration:none; margin-right:15px;">Helmet</a>
+    <a href="rate-limit.html" style="color:#fff; text-decoration:none; margin-right:15px;">Rate Limit</a>
+    <a href="cors.html" style="color:#fff; text-decoration:none; margin-right:15px;">CORS</a>
+    <a href="joi.html" style="color:#fff; text-decoration:none; margin-right:15px;">Joi</a>
+    <a href="csurf.html" style="color:#fff; text-decoration:none; margin-right:15px;">CSRF</a>
+    <a href="xss-clean.html" style="color:#fff; text-decoration:none; margin-right:15px;">XSS Clean</a>
+    <a href="express-session.html" style="color:#fff; text-decoration:none; margin-right:15px;">Sessions</a>
+    <a href="jsonwebtoken.html" style="color:#fff; text-decoration:none; margin-right:15px;">JWT</a>
+    <a href="bcrypt.html" style="color:#fff; text-decoration:none; margin-right:15px;">Bcrypt</a>
+    <a href="mongoose.html" style="color:#fff; text-decoration:none; margin-right:15px;">Mongoose</a>
+    <a href="mysql2.html" style="color:#fff; text-decoration:none; margin-right:15px;">MySQL2</a>
+    <a href="winston.html" style="color:#fff; text-decoration:underline;">Winston</a>
+  </nav>
+
+<h1>Bcrypt : Stockage sécurisé des mots de passe</h1>
+
+<h2>Qu'est-ce que Bcrypt ?</h2>
+<p>
+  <code>bcrypt</code> est un algorithme spécialement conçu pour protéger les mots de passe. Il transforme un mot de passe en une chaîne chiffrée (appelée "hash") que l’on peut stocker en toute sécurité dans une base de données.
+</p>
+<p>
+  Le principe est simple : au lieu de sauvegarder les mots de passe en clair (ce qui est dangereux), on sauvegarde leur version hachée. Cette version est quasi impossible à inverser pour retrouver le mot de passe d'origine.
+</p>
+
+<h2>Pourquoi utiliser Bcrypt ?</h2>
+<ul>
+  <li><strong>Protection contre le vol de mots de passe :</strong> Si un attaquant vole la base de données, il ne pourra pas récupérer les mots de passe originaux.</li>
+  <li><strong>Salage automatique :</strong> Bcrypt ajoute un "salt" (une valeur aléatoire unique) pour chaque mot de passe, ce qui rend les attaques par "rainbow table" inefficaces.</li>
+  <li><strong>Adaptatif :</strong> La complexité du hachage peut être ajustée, ce qui permet de suivre l'évolution de la puissance de calcul des attaquants.</li>
+</ul>
+
+<h2>Installation</h2>
+<p>Pour utiliser <code>bcrypt</code> dans un projet Node.js, installez-le avec npm :</p>
+<pre><code>npm install bcrypt</code></pre>
+
+<h2>Exemple d'utilisation simple</h2>
+<p>Voici un exemple basique qui montre comment :</p>
+<ul>
+  <li>hachage d’un mot de passe lors de l'inscription</li>
+  <li>comparaison du mot de passe en clair avec le hash stocké lors de la connexion</li>
+</ul>
+
+<pre><code>import express from 'express';
+import bcrypt from 'bcrypt';
+
+const app = express();
+app.use(express.json());
+
+// Inscription : hashage du mot de passe
+app.post('/signup', async (req, res) => {
+  const { password } = req.body;                // 1. Récupérer le mot de passe
+  const saltRounds = 10;                        // 2. Définir la complexité du hachage
+  const hashedPassword = await bcrypt.hash(password, saltRounds);  // 3. Créer le hash sécurisé
+  // En pratique, stocker hashedPassword en base de données ici
+  res.json({ hashedPassword });
+});
+
+// Connexion : vérification du mot de passe
+app.post('/login', async (req, res) => {
+  const { password, hashedPassword } = req.body;   // 1. Récupérer mot de passe et hash stocké
+  const match = await bcrypt.compare(password, hashedPassword);  // 2. Comparer mot de passe avec hash
+  if (match) {
+    res.send('Connexion réussie');
+  } else {
+    res.status(401).send('Mot de passe invalide');
+  }
+});
+
+app.listen(3000);</code></pre>
+
+<h2>Explications détaillées</h2>
+<ol>
+  <li>
+    <strong>Récupération du mot de passe :</strong> Le mot de passe est envoyé par le client via une requête POST. Ici, on utilise <code>req.body.password</code> pour l’extraire.
+  </li>
+  <li>
+    <strong>Complexité du hachage :</strong> Le paramètre <code>saltRounds</code> définit combien de fois bcrypt va appliquer son algorithme (plus c’est élevé, plus c’est sécurisé, mais aussi plus lent).
+  </li>
+  <li>
+    <strong>Création du hash :</strong> Avec <code>bcrypt.hash</code>, on obtient un hash salé unique, qui mélange mot de passe + salt de manière sécurisée.
+  </li>
+  <li>
+    <strong>Stockage sécurisé :</strong> Ce hash doit être enregistré dans la base de données, jamais le mot de passe en clair.
+  </li>
+  <li>
+    <strong>Vérification du mot de passe :</strong> Lors du login, on compare le mot de passe envoyé à celui stocké en base (hash) grâce à <code>bcrypt.compare</code>, qui applique le même salage et hachage en interne.
+  </li>
+  <li>
+    <strong>Réponse adaptée :</strong> On renvoie un message de succès si la comparaison est positive, sinon on refuse la connexion avec un code 401 (Unauthorized).
+  </li>
+</ol>
+
+    <p><strong>Explication :</strong> Lors de l'inscription, le mot de passe est haché avec un salage. Lors du login, il est comparé avec le hachage stocké.</p>
+  </main>
+</body>
+</html>

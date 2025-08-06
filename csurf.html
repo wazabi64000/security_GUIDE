@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Protection CSRF avec csurf - Sécurité Express</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav style="background:#007acc; padding:10px;">
+    <a href="index.html" style="color:#fff; text-decoration:none; margin-right:15px;">Accueil</a>
+    <a href="helmet.html" style="color:#fff; text-decoration:none; margin-right:15px;">Helmet</a>
+    <a href="rate-limit.html" style="color:#fff; text-decoration:none; margin-right:15px;">Rate Limit</a>
+    <a href="cors.html" style="color:#fff; text-decoration:none; margin-right:15px;">CORS</a>
+    <a href="joi.html" style="color:#fff; text-decoration:none; margin-right:15px;">Joi</a>
+    <a href="csurf.html" style="color:#fff; text-decoration:none; margin-right:15px;">CSRF</a>
+    <a href="xss-clean.html" style="color:#fff; text-decoration:none; margin-right:15px;">XSS Clean</a>
+    <a href="express-session.html" style="color:#fff; text-decoration:none; margin-right:15px;">Sessions</a>
+    <a href="jsonwebtoken.html" style="color:#fff; text-decoration:none; margin-right:15px;">JWT</a>
+    <a href="bcrypt.html" style="color:#fff; text-decoration:none; margin-right:15px;">Bcrypt</a>
+    <a href="mongoose.html" style="color:#fff; text-decoration:none; margin-right:15px;">Mongoose</a>
+    <a href="mysql2.html" style="color:#fff; text-decoration:none; margin-right:15px;">MySQL2</a>
+    <a href="winston.html" style="color:#fff; text-decoration:underline;">Winston</a>
+  </nav>
+
+  <main>
+    <h1>Protection contre les attaques CSRF avec <code>csurf</code></h1>
+    <p>CSRF (Cross-Site Request Forgery) est une attaque où un utilisateur authentifié est forcé d’exécuter une action non désirée. Le module <code>csurf</code> aide à prévenir ce type d’attaque.</p>
+
+    <h2>Installation</h2>
+    <pre><code>npm install csurf express-session</code></pre>
+
+    <h2>Principe</h2>
+    <p>Le serveur génère un <em>jeton CSRF</em> unique à chaque session utilisateur. Ce jeton doit être envoyé avec les requêtes sensibles (exemple : POST, PUT, DELETE). Le serveur vérifie que ce jeton est présent et valide.</p>
+
+    <h2>Exemple d’intégration simple avec Express</h2>
+    <pre><code>const express = require('express');
+const session = require('express-session');
+const csurf = require('csurf');
+
+const app = express();
+
+// Configuration session (nécessaire pour csurf)
+app.use(session({
+  secret: 'votreSecretSession',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // mettre true en prod avec HTTPS
+}));
+
+// Activation de csurf
+const csrfProtection = csurf();
+app.use(csrfProtection);
+
+// Middleware pour exposer le token CSRF aux vues / frontend
+app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
+
+app.use(express.urlencoded({ extended: true }));
+
+// Route formulaire avec token CSRF injecté
+app.get('/formulaire', (req, res) => {
+  res.send(\`
+    <form action="/process" method="POST">
+      <input type="hidden" name="_csrf" value="\${res.locals.csrfToken}">
+      <input type="text" name="data" placeholder="Données"/>
+      <button type="submit">Envoyer</button>
+    </form>
+  \`);
+});
+
+// Route traitement form
+app.post('/process', (req, res) => {
+  res.send('Données reçues en toute sécurité.');
+});
+
+app.listen(3000);</code></pre>
+
+    <h2>Points importants</h2>
+    <ul>
+      <li><strong>Express-session</strong> est obligatoire pour stocker la session utilisateur</li>
+      <li>Le token CSRF doit être envoyé dans les formulaires ou dans un header personnalisé (ex: <code>X-CSRF-Token</code>)</li>
+      <li>Attention à désactiver ou configurer <code>csurf</code> sur les routes GET ou publiques</li>
+      <li>En production, activez le cookie <code>secure: true</code> si HTTPS est utilisé</li>
+    </ul>
+
+    <h2>Cas d’usage API + frontend</h2>
+    <p>Pour une API REST utilisée avec un frontend séparé (React, Angular), on peut envoyer le token via un endpoint sécurisé, puis le frontend le renvoie dans un header <code>X-CSRF-Token</code> sur les requêtes protégées.</p>
+
+  </main>
+</body>
+</html>
