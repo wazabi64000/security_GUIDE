@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Utilisation sécurisée de Mongoose - Sécurité Express</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mongoose sécurisé avec Node.js (ESM)</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <!-- Navigation -->
@@ -24,62 +25,74 @@
   </nav>
 
   <main>
-    <h1>Utilisation sécurisée de <code>mongoose</code> avec Node.js</h1>
+    <h1>Utilisation sécurisée de <code>mongoose</code> avec Node.js (ESM)</h1>
 
-    <p><code>mongoose</code> est une bibliothèque ODM (Object Data Modeling) pour MongoDB, facilitant la manipulation des données et la définition de schémas dans une application Node.js.</p>
+    <p><code>mongoose</code> est une bibliothèque ODM pour MongoDB, facilitant la gestion des données et la définition de schémas.</p>
 
     <h2>Installation</h2>
-    <pre><code>npm install mongoose</code></pre>
+    <pre><code>npm install mongoose bcrypt</code></pre>
 
-    <h2>Connexion à MongoDB</h2>
-    <pre><code>const mongoose = require('mongoose');
+    <h2>Connexion à MongoDB (ESM)</h2>
+    <pre><code>import mongoose from 'mongoose';
 
-mongoose.connect('mongodb://localhost:27017/maBase')
-.then(() => console.log('Connexion à MongoDB réussie'))
-.catch(err => console.error('Erreur connexion MongoDB :', err));</code></pre>
+try {
+  await mongoose.connect('mongodb://localhost:27017/maBase', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  });
+  console.log('Connexion à MongoDB réussie');
+} catch (err) {
+  console.error('Erreur connexion MongoDB :', err);
+}</code></pre>
 
     <h2>Définition d’un schéma sécurisé</h2>
-    <p>Utilisez les validations intégrées et la gestion des types pour éviter l’injection et données invalides.</p>
+    <pre><code>import bcrypt from 'bcrypt';
 
-    <pre><code>const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true, minlength: 3, maxlength: 30 },
   email: { type: String, required: true, unique: true, match: /.+\@.+\..+/ },
   passwordHash: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
 });
 
-// Création du modèle
+// Middleware pour hasher le mot de passe avant sauvegarde
+userSchema.pre('save', async function(next) {
+  if (this.isModified('passwordHash')) {
+    const salt = await bcrypt.genSalt(10);
+    this.passwordHash = await bcrypt.hash(this.passwordHash, salt);
+  }
+  next();
+});
+
 const User = mongoose.model('User', userSchema);</code></pre>
 
-    <h2>Bonnes pratiques de sécurité</h2>
-    <ul>
-      <li><strong>Validation stricte :</strong> Utilisez les options de schéma pour valider les données.</li>
-      <li><strong>Éviter les injections :</strong> N’utilisez jamais directement les données non filtrées dans les requêtes MongoDB. Mongoose protège contre les injections si vous utilisez ses méthodes correctement.</li>
-      <li><strong>Gestion des erreurs :</strong> Toujours gérer les erreurs des opérations asynchrones pour éviter les fuites d’informations sensibles.</li>
-      <li><strong>Connexion sécurisée :</strong> En production, connectez-vous à MongoDB via TLS/SSL et gérez vos credentials avec des variables d’environnement.</li>
-      <li><strong>Limitation des champs retournés :</strong> Ne retournez pas les mots de passe ou données sensibles.</li>
-    </ul>
-
-    <h2>Exemple simple d’utilisation</h2>
-    <pre><code>// Création d’un utilisateur
-async function createUser() {
+    <h2>Exemple de création d’utilisateur</h2>
+    <pre><code>async function createUser() {
   try {
     const user = new User({
       username: 'toto',
       email: 'toto@example.com',
-      passwordHash: 'hash_secure'
+      passwordHash: 'monMotDePasse123'
     });
     await user.save();
     console.log('Utilisateur créé');
   } catch (error) {
-    console.error('Erreur création utilisateur:', error.message);
+    console.error('Erreur création utilisateur :', error.message);
   }
 }
 
 createUser();</code></pre>
 
-    <h2>Conclusion</h2>
-    <p><code>mongoose</code> facilite l’interaction avec MongoDB tout en offrant des outils pour sécuriser vos données grâce à des schémas bien définis et une validation stricte. Combinez-le toujours avec une validation d’entrée côté serveur (ex : Joi) et un système d’authentification sécurisé.</p>
+    <h2>Bonnes pratiques de sécurité</h2>
+    <ul>
+      <li><strong>Validation stricte :</strong> Utilisez les règles de schéma pour filtrer les données.</li>
+      <li><strong>Hashage des mots de passe :</strong> Ne stockez jamais les mots de passe en clair.</li>
+      <li><strong>Connexion sécurisée :</strong> En production, utilisez TLS/SSL et variables d’environnement pour les credentials.</li>
+      <li><strong>Limiter les champs retournés :</strong> Ne retournez jamais le hash des mots de passe ou données sensibles.</li>
+      <li><strong>Gestion des erreurs :</strong> Capturez toujours les erreurs pour éviter les fuites d’information.</li>
+    </ul>
+
+    <p>Combinez <code>mongoose</code> avec une validation côté serveur (ex : Joi) et un système d’authentification sécurisé pour un projet complet et sûr.</p>
   </main>
 </body>
 </html>

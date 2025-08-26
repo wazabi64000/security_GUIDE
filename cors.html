@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>cors - Sécurité Express</title>
-<link rel="stylesheet" href="style.css">
-
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <nav style="background:#007acc; padding:10px;">
@@ -63,13 +62,18 @@ app.listen(3000);</code></pre>
     <li><code>preflightContinue</code> : si <code>true</code>, passe la gestion des requêtes OPTIONS au middleware suivant.</li>
   </ul>
 
-  <div class="section-title">Exemple avancé : origine dynamique</div>
-  <pre><code>const whitelist = ['https://example.com', 'https://monautredomaine.com'];
+  <div class="section-title">Exemple avancé : origine dynamique (ESM)</div>
+  <pre><code>import express from 'express';
+import cors from 'cors';
+
+const app = express();
+
+const whitelist = ['https://example.com', 'https://monautredomaine.com'];
 
 const corsOptions = {
   origin: (origin, callback) => {
     if (!origin) return callback(null, true); // Requête serveur à serveur
-    if (whitelist.indexOf(origin) !== -1) {
+    if (whitelist.includes(origin)) {
       callback(null, true); // Origine autorisée
     } else {
       callback(new Error('Origine non autorisée par CORS'));
@@ -78,7 +82,13 @@ const corsOptions = {
   credentials: true,
 };
 
-app.use(cors(corsOptions));</code></pre>
+app.use(cors(corsOptions));
+
+app.get('/', (req, res) => {
+  res.send('CORS configuré avec whitelist dynamique');
+});
+
+app.listen(3000);</code></pre>
 
   <div class="section-title">Bonnes pratiques</div>
   <ul>

@@ -3,24 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <title>Sécuriser une API Express Moderne</title>
-<link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <nav style="background:#007acc; padding:10px;">
-  <a href="index.html" style="color:#fff; text-decoration:none; margin-right:15px;">Accueil</a>
-  <a href="helmet.html" style="color:#fff; text-decoration:none; margin-right:15px;">Helmet</a>
-  <a href="rate-limit.html" style="color:#fff; text-decoration:none; margin-right:15px;">Rate Limit</a>
-  <a href="cors.html" style="color:#fff; text-decoration:none; margin-right:15px;">CORS</a>
-  <a href="joi.html" style="color:#fff; text-decoration:none; margin-right:15px;">Joi</a>
-  <a href="csurf.html" style="color:#fff; text-decoration:none; margin-right:15px;">CSRF</a>
-  <a href="xss-clean.html" style="color:#fff; text-decoration:none; margin-right:15px;">XSS Clean</a>
-  <a href="express-session.html" style="color:#fff; text-decoration:none; margin-right:15px;">Sessions</a>
-  <a href="jsonwebtoken.html" style="color:#fff; text-decoration:none; margin-right:15px;">JWT</a>
-  <a href="bcrypt.html" style="color:#fff; text-decoration:none; margin-right:15px;">Bcrypt</a>
-  <a href="mongoose.html" style="color:#fff; text-decoration:none; margin-right:15px;">Mongoose</a>
-  <a href="mysql2.html" style="color:#fff; text-decoration:none; margin-right:15px;">MySQL2</a>
-  <a href="winston.html" style="color:#fff; text-decoration:none;">Winston</a>
-</nav>
+    <a href="index.html" style="color:#fff; text-decoration:none; margin-right:15px;">Accueil</a>
+    <a href="helmet.html" style="color:#fff; text-decoration:none; margin-right:15px;">Helmet</a>
+    <a href="rate-limit.html" style="color:#fff; text-decoration:none; margin-right:15px;">Rate Limit</a>
+    <a href="cors.html" style="color:#fff; text-decoration:none; margin-right:15px;">CORS</a>
+    <a href="joi.html" style="color:#fff; text-decoration:none; margin-right:15px;">Joi</a>
+    <a href="csurf.html" style="color:#fff; text-decoration:none; margin-right:15px;">CSRF</a>
+    <a href="xss-clean.html" style="color:#fff; text-decoration:none; margin-right:15px;">XSS Clean</a>
+    <a href="express-session.html" style="color:#fff; text-decoration:none; margin-right:15px;">Sessions</a>
+    <a href="jsonwebtoken.html" style="color:#fff; text-decoration:none; margin-right:15px;">JWT</a>
+    <a href="bcrypt.html" style="color:#fff; text-decoration:none; margin-right:15px;">Bcrypt</a>
+    <a href="mongoose.html" style="color:#fff; text-decoration:none; margin-right:15px;">Mongoose</a>
+    <a href="mysql2.html" style="color:#fff; text-decoration:none; margin-right:15px;">MySQL2</a>
+    <a href="winston.html" style="color:#fff; text-decoration:none;">Winston</a>
+  </nav>
 
   <header>
     <h1>Guide de Sécurisation API Express</h1>
@@ -70,12 +70,12 @@
 
     <section>
       <h2>Exemple de code sécurisé</h2>
-      <pre><code>const express = require('express');
-const helmet = require('helmet');
-const cors = require('cors');
-const rateLimit = require('express-rate-limit');
-const xss = require('xss-clean');
-const { body, validationResult } = require('express-validator');
+      <pre><code>import express from 'express';
+import helmet from 'helmet';
+import cors from 'cors';
+import rateLimit from 'express-rate-limit';
+import xss from 'xss-clean';
+import { body, validationResult } from 'express-validator';
 
 const app = express();
 app.use(helmet());
@@ -96,31 +96,31 @@ app.post('/login',
 app.listen(3000);</code></pre>
     </section>
 
-<section>
-  <h2>Conseils supplémentaires</h2>
-  <ul>
-    <li>
-      <strong>Utiliser <code>npm audit</code> régulièrement</strong>  
-      <p>Exécutez cette commande pour détecter et corriger les vulnérabilités dans vos dépendances. Cela permet de maintenir votre projet à jour et sécurisé.</p>
-    </li>
-    <li>
-      <strong>Ne jamais afficher les erreurs serveur en production</strong>  
-      <p>Pour éviter de révéler des informations sensibles aux utilisateurs ou attaquants, configurez votre application pour ne montrer que des messages génériques en cas d’erreur, et logguez les détails côté serveur.</p>
-    </li>
-    <li>
-      <strong>Limiter les droits sur la base de données</strong>  
-      <p>Attribuez uniquement les permissions nécessaires à vos utilisateurs ou services. Par exemple, un compte de lecture ne doit pas avoir de droits d’écriture. Ceci réduit les risques en cas de compromission.</p>
-    </li>
-    <li>
-      <strong>Utiliser HTTPS avec redirection automatique</strong>  
-      <p>Chiffrez les échanges entre clients et serveur pour éviter les interceptions (man-in-the-middle). Configurez le serveur pour rediriger toutes les requêtes HTTP vers HTTPS automatiquement.</p>
-    </li>
-  </ul>
-</section>
+    <section>
+      <h2>Conseils supplémentaires</h2>
+      <ul>
+        <li>
+          <strong>Utiliser <code>npm audit</code> régulièrement</strong>  
+          <p>Exécutez cette commande pour détecter et corriger les vulnérabilités dans vos dépendances. Cela permet de maintenir votre projet à jour et sécurisé.</p>
+        </li>
+        <li>
+          <strong>Ne jamais afficher les erreurs serveur en production</strong>  
+          <p>Pour éviter de révéler des informations sensibles aux utilisateurs ou attaquants, configurez votre application pour ne montrer que des messages génériques en cas d’erreur, et logguez les détails côté serveur.</p>
+        </li>
+        <li>
+          <strong>Limiter les droits sur la base de données</strong>  
+          <p>Attribuez uniquement les permissions nécessaires à vos utilisateurs ou services. Par exemple, un compte de lecture ne doit pas avoir de droits d’écriture. Ceci réduit les risques en cas de compromission.</p>
+        </li>
+        <li>
+          <strong>Utiliser HTTPS avec redirection automatique</strong>  
+          <p>Chiffrez les échanges entre clients et serveur pour éviter les interceptions (man-in-the-middle). Configurez le serveur pour rediriger toutes les requêtes HTTP vers HTTPS automatiquement.</p>
+        </li>
+      </ul>
+    </section>
+  </main>
 
-<footer style="margin-top:40px; padding:10px; border-top:1px solid #ccc; text-align:center; font-size:0.9em; color:#555;">
-  <p>Guide réalisé pour d'amuser</p>
-</footer>
-
+  <footer style="margin-top:40px; padding:10px; border-top:1px solid #ccc; text-align:center; font-size:0.9em; color:#555;">
+    <p>Guide réalisé pour d'amuser</p>
+  </footer>
 </body>
 </html>
